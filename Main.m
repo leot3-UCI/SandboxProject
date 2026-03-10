@@ -15,6 +15,10 @@ img = imread('AHHHDog.jpg');
 % convet to grayscale
 grayImg = rgb2gray(img);
 
+% normalize brightness so every pixel is a brightness between 0 - 1 for
+% easier mapping latter
+grayImg = double(grayImg) / 255;
+
 % Show original
 figure;
 subplot(1,2,1);
