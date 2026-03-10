@@ -1,0 +1,4 @@
+%% Getting Started
+clear; 
+clc;
+disp("Project started");
