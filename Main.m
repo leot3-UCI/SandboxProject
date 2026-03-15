@@ -20,12 +20,12 @@ grayImg = double(grayImg) / 255;
 % Show the original image
 figure;
 
-subplot(1,3,1);
+subplot(1,4,1);
 imshow(img);
 title('Original Image');
 
 % Show the grayscale image
-subplot(1,3,2);
+subplot(1,4,2);
 imshow(grayImg);
 title('Grayscale Image');
 
@@ -40,29 +40,24 @@ scaleIndex = 0.2; % reduce the image to 20% its original size, to optimize detai
 resizeImg = imresize(grayImg, [scaleIndex * 0.5 * size(grayImg,1), scaleIndex * size(grayImg,2)]);
 
 % Show the resized image
-subplot(1,3,3);
+subplot(1,4,3);
 imshow(resizeImg);
 title('Reduced Resolution Image');
 
 %% Part 3
-adjustBrightness = imadjust(resizeImg, [0.2, 0.9], [ ]);
-imshow(adjustBrightness)
+% Adjust brightness/contrast to make the text art clearer
 
-% establish characters used to draw the dog
-charImg =  ' |\/-'; %characters to be used 
+adjustBrightness = imadjust(resizeImg, [0.2 0.9], []);
+
+% Character set from darkest to lightest
+% Dark pixels will map to dense characters, bright pixels to lighter ones
+charImg = '@#S%?*+;:,. ';
 numChars = length(charImg);
 
-% Pixels below threshold will be printed as spaces, clean up background
-gradientThreshold = 0.1; 
-
-[Gx, Gy] = imgradientxy(adjustBrightness, 'sobel'); % change detector;  looks for gradients and distinguishes item from
-% background
-
-% magnitude and direction of the gradients
-[Gmag, Gdir] = imgradient(Gx, Gy);
-
-% Normalize the magnitude to 0-1 for thresholding
-GmagNorm = Gmag / max(Gmag(:));
+% Show the contrast-adjusted image
+subplot(1,4,4);
+imshow(adjustBrightness);
+title('Contrast-Adjusted Image for Text Mapping');
 
 %% Part 4
 % Print out text art
