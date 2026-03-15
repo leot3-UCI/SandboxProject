@@ -61,3 +61,25 @@ title('Contrast-Adjusted Image for Text Mapping');
 
 %% Part 4
 % Print out text art
+[rows, cols] = size(adjustBrightness);
+
+for i = 1:rows
+    % Finds the character array for the current line faster
+    lineChars = char(zeros(1, cols)); 
+    
+    for j = 1:cols
+        % Get pixel value (0 to 1)
+        pixelVal = adjustBrightness(i, j);
+        
+        % Map pixel to index (1 to numChars)
+        % Using 'round' and 'min/max' to stay in bound
+        charIdx = round(pixelVal * (numChars - 1)) + 1;
+        charIdx = max(1, min(numChars, charIdx));
+        
+        % Assigns characters
+        lineChars(j) = charImg(charIdx);
+    end
+    % Print full line at once
+    fprintf('%s\n', lineChars);
+end
+fprintf('\n End of Art :)\n');
