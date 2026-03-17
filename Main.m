@@ -2,7 +2,8 @@
 % BME 60B Sandbox Project
 % Members: Leo Tian, Khendra Beth Hernandez, Jericho Celeste, Isabel Bueno
 
-clc; clear; close all;
+clear all; close all; 
+clc;
 
 %% Part 1
 % Convert the image of the dog to grayscale
