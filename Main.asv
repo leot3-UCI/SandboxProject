@@ -1,6 +1,9 @@
 clear all; close all;
 clc;
 
+clear all; close all;
+clc;
+
 %% Image To Text Art Converter (Advanced Version)
 % BME 60B Sandbox Project
 % Members: Leo Tian, Khendra Beth Hernandez, Jericho Celeste, Isabel Bueno
@@ -41,7 +44,7 @@ while keepRunning
     baseSet = '@#S%?*+;:,. '; % basic set
     highDetailSet = '@$B%8&WM#*oahkbdpqwmZO0QLCJUYXzcvuxrjft/\|()1{}[]?-_+~<>i!lI;:,"^`''. '; % complex set
 
-    % to determine which character set to go with based on mode
+    % to determine which mode to go with
     if modeChoice == 1
         charSet = baseSet;
     elseif modeChoice == 2
@@ -86,19 +89,15 @@ while keepRunning
             resizeImg = reduceResolution(grayImg, scaleIndex);
             adjustBrightness = adjustImageContrast(resizeImg, brightnessRange);
         end
-        % to show all the processing steps to help the user determine if
-        % they want to proceed or not
+
         showProcessingSteps(img, grayImg, resizeImg, adjustBrightness);
 
-        % prompt the user if they want to use the current settings
         satisfied = lower(input('Use these settings? (y/n): ', 's'));
 
         while ~(satisfied == 'y' || satisfied == 'n')
             satisfied = lower(input('Enter y or n: ', 's'));
         end
-        
-        % If the user doesn't like the current settings, then give them the
-        % option to choose again
+
         if satisfied == 'n'
             scaleChoice = input('Enter new image size (1–10): ');
             while scaleChoice < 1 || scaleChoice > 10
@@ -108,23 +107,22 @@ while keepRunning
         end
     end
 
-    % ASCII converstion
+    %% ===== ASCII CONVERSION =====
     asciiLines = imageToAscii(adjustBrightness, charSet);
 
-    % print out the lines
+    %% ===== PRINT =====
     printAsciiArt(asciiLines);
 
-    % give the user the option to save their artwork
+    %% ===== SAVE OPTION =====
     saveChoice = lower(input('Save ASCII art to a file? (y/n): ', 's'));
 
-    % if the use chooses to save their art, it gets saved
     if saveChoice == 'y'
         outputFile = input('Enter output file name (e.g., art.txt): ', 's');
         saveAsciiArt(asciiLines, outputFile);
         fprintf('Saved to %s\n', outputFile);
     end
 
-    % repeat for another image if the user wants to 
+    %% ===== REPEAT =====
     again = lower(input('Convert another image? (y/n): ', 's'));
 
     while ~(again == 'y' || again == 'n')
@@ -139,7 +137,7 @@ end
 fprintf('\nProgram finished.\n');
 
 
-% Functions
+%% ===== FUNCTIONS =====
 
 function [img, grayImg] = loadAndConvertImage(imageFile)
     try
