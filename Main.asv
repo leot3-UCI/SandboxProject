@@ -1,10 +1,7 @@
 clear all; close all;
 clc;
 
-clear all; close all;
-clc;
-
-%% Image To Text Art Converter (Advanced Version)
+%% Image To Text Art Converter
 % BME 60B Sandbox Project
 % Members: Leo Tian, Khendra Beth Hernandez, Jericho Celeste, Isabel Bueno
 
@@ -44,7 +41,7 @@ while keepRunning
     baseSet = '@#S%?*+;:,. '; % basic set
     highDetailSet = '@$B%8&WM#*oahkbdpqwmZO0QLCJUYXzcvuxrjft/\|()1{}[]?-_+~<>i!lI;:,"^`''. '; % complex set
 
-    % to determine which mode to go with
+    % to determine which character set to go with based on mode
     if modeChoice == 1
         charSet = baseSet;
     elseif modeChoice == 2
@@ -65,11 +62,16 @@ while keepRunning
     % didn't go with this earlier since 1-10 is a much easier to understand
     % from a user perspective
 
-    % Contrast range input
+    % User customizes brightness range
     brightnessRange = input('Enter brightness range as [low high] (e.g., [0.2 0.9]): ');
-    if length(brightnessRange) ~= 2
-        brightnessRange = [0.2 0.9];
-        fprintf('Invalid input. Using default contrast.\n');
+    
+    % verify that the range from the user is valid 
+    while ~(isnumeric(brightnessRange) && numel(brightnessRange) == 2 && ...
+            brightnessRange(1) >= 0 && brightnessRange(2) <= 1 && ...
+            brightnessRange(1) < brightnessRange(2))
+    
+        % if the user doesn't input a valid range
+        brightnessRange = input('Enter a valid range like [0.2 0.9] with 0 ≤ low < high ≤ 1: ');
     end
 
     % load the image
@@ -89,40 +91,75 @@ while keepRunning
             resizeImg = reduceResolution(grayImg, scaleIndex);
             adjustBrightness = adjustImageContrast(resizeImg, brightnessRange);
         end
-
+        % to show all the processing steps to help the user determine if
+        % they want to proceed or not
         showProcessingSteps(img, grayImg, resizeImg, adjustBrightness);
 
-        satisfied = lower(input('Use these settings? (y/n): ', 's'));
+        % prompt the user if they want to use the current settings
+        satisfied = lower(strtrim(input('Use these settings? (y/n): ', 's')));
 
-        while ~(satisfied == 'y' || satisfied == 'n')
-            satisfied = lower(input('Enter y or n: ', 's'));
+        while ~(strcmp(satisfied, 'y') || strcmp(satisfied, 'n'))
+            satisfied = lower(strtrim(input('Enter y or n: ', 's')));
         end
-
-        if satisfied == 'n'
-            scaleChoice = input('Enter new image size (1–10): ');
-            while scaleChoice < 1 || scaleChoice > 10
-                scaleChoice = input('Enter a valid size (1–10): ');
+        
+        if strcmp(satisfied, 'n')
+            %
+            fprintf('Adjust settings:\n');
+            fprintf('1 = Change size\n');
+            fprintf('2 = Change contrast\n');
+            fprintf('3 = Change both\n');
+        
+            choice = input('Select option (1–3): ');
+        
+            while ~(choice == 1 || choice == 2 || choice == 3)
+                choice = input('Enter 1, 2, or 3: ');
             end
-            scaleIndex = scaleChoice / 50;
+        
+            % Change size
+            if choice == 1 || choice == 3
+                scaleChoice = input('Enter new image size (1–10): ');
+                while ~(isscalar(scaleChoice) && scaleChoice >= 1 && scaleChoice <= 10 && scaleChoice == floor(scaleChoice))
+                    scaleChoice = input('Enter a valid whole number (1–10): ');
+                end
+                scaleIndex = scaleChoice / 50;
+            end
+        
+            % Change contrast
+            if choice == 2 || choice == 3
+                brightnessRange = input('Enter new brightness range [low high]: ');
+                while ~(isnumeric(brightnessRange) && numel(brightnessRange) == 2 && ...
+                        brightnessRange(1) >= 0 && brightnessRange(2) <= 1 && ...
+                        brightnessRange(1) < brightnessRange(2))
+                    brightnessRange = input('Enter a valid range like [0.2 0.9]: ');
+                end
+            end
         end
     end
 
-    %% ===== ASCII CONVERSION =====
+    % ASCII converstion
     asciiLines = imageToAscii(adjustBrightness, charSet);
 
-    %% ===== PRINT =====
+    % print out the lines
     printAsciiArt(asciiLines);
 
-    %% ===== SAVE OPTION =====
-    saveChoice = lower(input('Save ASCII art to a file? (y/n): ', 's'));
+    % give the user the option to save their artwork
+    saveChoice = lower(strtrim(input('Save ASCII art to a file? (y/n): ', 's')));
+    
+    % verifies that the user inputs a valid input (y/n)
+    while ~(strcmp(saveChoice, 'y') || strcmp(saveChoice, 'n'))
+        % makes sure that inputing "y " as opposed to "y" doesn't break the
+        % code
+        saveChoice = lower(strtrim(input('Enter y or n: ', 's')));
+    end
 
+    % if the use chooses to save their art, it gets saved
     if saveChoice == 'y'
         outputFile = input('Enter output file name (e.g., art.txt): ', 's');
         saveAsciiArt(asciiLines, outputFile);
         fprintf('Saved to %s\n', outputFile);
     end
 
-    %% ===== REPEAT =====
+    % repeat for another image if the user wants to 
     again = lower(input('Convert another image? (y/n): ', 's'));
 
     while ~(again == 'y' || again == 'n')
@@ -137,7 +174,7 @@ end
 fprintf('\nProgram finished.\n');
 
 
-%% ===== FUNCTIONS =====
+% Functions
 
 function [img, grayImg] = loadAndConvertImage(imageFile)
     try
