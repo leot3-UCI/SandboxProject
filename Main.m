@@ -99,6 +99,7 @@ while keepRunning
         % prompt the user if they want to use the current settings
         satisfied = lower(strtrim(input('Use these settings? (y/n): ', 's')));
 
+        % makes sure the user's input is valid
         while ~(strcmp(satisfied, 'y') || strcmp(satisfied, 'n'))
             satisfied = lower(strtrim(input('Enter y or n: ', 's')));
         end
@@ -110,7 +111,8 @@ while keepRunning
             fprintf('1 = Change size\n');
             fprintf('2 = Change contrast\n');
             fprintf('3 = Change both\n');
-        
+            
+            % prompt the user for their prefered option
             choice = input('Select option (1–3): ');
         
             % if the user doesn't input a valid choise
@@ -121,9 +123,14 @@ while keepRunning
             % Change size
             if choice == 1 || choice == 3
                 scaleChoice = input('Enter new image size (1–10): ');
+                % make sure the user inputs a valid option
                 while ~(isscalar(scaleChoice) && scaleChoice >= 1 && scaleChoice <= 10 && scaleChoice == floor(scaleChoice))
                     scaleChoice = input('Enter a valid whole number (1–10): ');
                 end
+                % scaled by default to 0.2, multiplied by 10 to match
+                % user's prefered input from 0-10, easier to read this way,
+                % back end isn't shown as clearly to user but doesn't
+                % matter anyway
                 scaleIndex = scaleChoice / 50;
             end
         
@@ -141,7 +148,7 @@ while keepRunning
         end
     end
 
-    % ASCII converstion
+    % ASCII converston
     asciiLines = imageToAscii(adjustBrightness, charSet);
 
     % print out the lines
@@ -168,6 +175,7 @@ while keepRunning
     % repeat for another image if the user wants to 
     again = lower(strtrim(input('Convert another image? (y/n): ', 's')));
 
+    % makes sure the user puts in a valid input
     while ~(again == 'y' || again == 'n')
         again = lower(input('Enter y or n: ', 's'));
     end
@@ -177,6 +185,7 @@ while keepRunning
     end
 end
 
+% finish the program
 fprintf('\nProgram finished.\n');
 
 
